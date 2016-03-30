@@ -1,20 +1,57 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
+using Autofac;
+using Autofac.Integration.WebApi;
+using Scylla_TODO.Config;
 
-namespace scylla_todo
+namespace Scylla_TODO
 {
-	public class MvcApplication : HttpApplication
+	public class Global : HttpApplication
 	{
-		protected void Application_Start()
+		protected void Application_Start(object sender, EventArgs e)
 		{
-			AreaRegistration.RegisterAllAreas();
-			GlobalConfiguration.Configure(WebApiConfig.Register);
-			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-			RouteConfig.RegisterRoutes(RouteTable.Routes);
-			BundleConfig.RegisterBundles(BundleTable.Bundles);
+			ConfigureRouteMapping();
+
+			ConfigureDependencyInjectionContainer();
+		}
+
+		private static void ConfigureRouteMapping()
+		{
+			GlobalConfiguration.Configuration.Routes
+				.MapHttpRoute("Default", "{controller}/{id}", new {id = RouteParameter.Optional});
+		}
+
+		private static void ConfigureDependencyInjectionContainer()
+		{
+			var container = new ContainerBuilder();
+			container.RegisterModule<TypeModule>();
+			container.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
+			GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container.Build());
+		}
+		
+		protected void Session_Start(object sender, EventArgs e)
+		{
+		}
+
+		protected void Application_BeginRequest(object sender, EventArgs e)
+		{
+		}
+
+		protected void Application_AuthenticateRequest(object sender, EventArgs e)
+		{
+		}
+
+		protected void Application_Error(object sender, EventArgs e)
+		{
+		}
+
+		protected void Session_End(object sender, EventArgs e)
+		{
+		}
+
+		protected void Application_End(object sender, EventArgs e)
+		{
 		}
 	}
 }
