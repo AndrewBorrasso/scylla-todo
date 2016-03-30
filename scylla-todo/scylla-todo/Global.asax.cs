@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using Autofac;
@@ -12,14 +14,25 @@ namespace Scylla_TODO
 		protected void Application_Start(object sender, EventArgs e)
 		{
 			ConfigureRouteMapping();
-
+			ConfigureFormatters();
 			ConfigureDependencyInjectionContainer();
 		}
 
+		private static void ConfigureFormatters()
+		{
+			var appXmlType = GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.FirstOrDefault(t => t.MediaType == "application/xml");
+			GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Remove(appXmlType);
+		}
+
+		[SuppressMessage("ReSharper", "RedundantArgumentNameForLiteralExpression")]
+		[SuppressMessage("ReSharper", "RedundantArgumentName")]
 		private static void ConfigureRouteMapping()
 		{
 			GlobalConfiguration.Configuration.Routes
-				.MapHttpRoute("Default", "{controller}/{id}", new {id = RouteParameter.Optional});
+				.MapHttpRoute(
+					name: "Default",
+					routeTemplate: "api/{controller}/{id}",
+					defaults: new {id = RouteParameter.Optional});
 		}
 
 		private static void ConfigureDependencyInjectionContainer()
