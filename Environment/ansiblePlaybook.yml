@@ -1,0 +1,51 @@
+---
+- hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+    - name: remove the Automatic Bug Reporting Tool (ABRT) package
+      yum: name=abrt state=absent
+
+    - name: install the Extra Packages for Enterprise Linux (EPEL) package
+      yum: name=epel-release state=latest
+
+    - name: download the Scylla repo
+      get_url: 
+        url=http://downloads.scylladb.com/rpm/centos/scylla.repo 
+        dest=/etc/yum.repos.d/scylla.repo
+
+    - name: install Scylla packages
+      yum: name="{{ item }}" state=latest
+      with_items:
+          - scylla-server
+          - scylla-jmx
+          - scylla-tools
+
+    - name: Display all variables/facts known for a host
+      debug: var=hostvars[inventory_hostname]
+
+    - name: Set Scylla Cluster Name
+      lineinfile: "dest=/etc/scylla/scylla.yaml regexp='^cluster_name:' line='cluster_name: 'ToDoCluster'' state=present"
+
+    - name: Set Scylla Seeds
+      lineinfile: "dest=/etc/scylla/scylla.yaml regexp='- seeds:' line='          - seeds: \"192.168.205.10,192.168.205.12\"' state=present" 
+                #TODO: do not hard code IP addresses here
+                #maybe line='          - seeds: \"{{hostvars[scylla1].ansible_all_ipv4_addresses[1]}},{{hostvars[scylla3].ansible_all_ipv4_addresses[1]}}\"'
+
+    - name: Set Scylla Listen Address
+      lineinfile: "dest=/etc/scylla/scylla.yaml regexp='listen_address:' line='listen_address: {{ hostvars[inventory_hostname].ansible_all_ipv4_addresses[1] }}' state=present"
+
+    - name: Set Scylla Broadcast Address
+      lineinfile: "dest=/etc/scylla/scylla.yaml regexp='broadcast_address:' line='broadcast_address: {{ hostvars[inventory_hostname].ansible_all_ipv4_addresses[1] }}' state=present"
+
+    - name: Flush the IP Tables
+      shell: iptables -F
+
+    - name: Start the Scylla Services
+      shell: systemctl start scylla-server scylla-jmx
+
+    - name: Wait for the Scylla-Server to be listening on the correct IP
+      wait_for: host=192.168.205.10 port=9042 delay=0
+
+    - name: Make sure the KeySpace is defined
+      shell: "cqlsh 192.168.205.10 -e \"CREATE KEYSPACE IF NOT EXISTS todospace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2};\""
