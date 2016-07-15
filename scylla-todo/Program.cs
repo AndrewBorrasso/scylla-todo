@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
 
-namespace scylla.to.do
+namespace scylla.todo
 {
     public class Program
     {
