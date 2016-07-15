@@ -6,7 +6,7 @@ Eventually a simple bare bones todo app backed with a scylla persistence layer.
 ## Getting Started
 
 0. Check out the repository onto your machine.
-1. Install [VirtualBox]().
+1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
 2. Install [VS Code]().
 3. Install [Vagrant]().
 4. Install [Ansible]().
