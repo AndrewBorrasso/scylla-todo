@@ -7,10 +7,10 @@ Eventually a simple bare bones todo app backed with a scylla persistence layer.
 
 0. Check out the repository onto your machine.
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
-2. Install [VS Code]().
-3. Install [Vagrant]().
-4. Install [Ansible]().
-5. Install VS Code Extensions
+2. Install [VS Code](https://code.visualstudio.com/Download).
+3. Install [Vagrant](https://www.vagrantup.com/downloads.html).
+4. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html#latest-releases-via-pip).
+5. Install VS Code Extensions:
     1. Open VS Code
     2. Find the extension icon on the leftmost navigation bar
     3. Search for "C#" and install
