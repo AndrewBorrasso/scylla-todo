@@ -17,11 +17,11 @@ Eventually a simple bare bones todo app backed with a scylla persistence layer.
     4. Install .Net Core (See [the .Net Core Getting Started Guide](https://www.microsoft.com/net/core#macos) for more info)
         1. Install [Homebrew](http://brew.sh/)
         2. Update & Install prerequisites
-            ```
-              $ brew update
-              $ brew install openssl
-              $ brew link --force openssl
-            ```
+```
+    $ brew update
+    $ brew install openssl
+    $ brew link --force openssl
+```
         3. Download and install the official [.Net Core Installer](https://go.microsoft.com/fwlink/?LinkID=809124)
 6. Install Vagrant Box: 
     1. run `$ cd ./path/to/where/you/checked/out/the/repository`
