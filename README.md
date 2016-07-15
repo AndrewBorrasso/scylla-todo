@@ -22,6 +22,7 @@ Eventually a simple bare bones todo app backed with a scylla persistence layer.
     $ brew install openssl
     $ brew link --force openssl
 ```
+
         3. Download and install the official [.Net Core Installer](https://go.microsoft.com/fwlink/?LinkID=809124)
 6. Install Vagrant Box: 
     1. run `$ cd ./path/to/where/you/checked/out/the/repository`
