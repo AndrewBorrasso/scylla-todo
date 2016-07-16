@@ -37,9 +37,6 @@
     - name: Flush the IP Tables
       shell: iptables -F
 
-    - name: Setup the Scylla instance tuned to the system
-      shell: scylla_setup
-
     - name: Start the Scylla Services
       shell: systemctl start scylla-server scylla-jmx
 
