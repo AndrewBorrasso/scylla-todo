@@ -28,20 +28,23 @@
                 #TODO: do not hard code IP addresses here
                 #maybe line='          - seeds: \"{{hostvars[scylla1].ansible_all_ipv4_addresses[1]}},{{hostvars[scylla3].ansible_all_ipv4_addresses[1]}}\"'
 
-    - name: Set Scylla Listen Address
+    - name: Set Scylla IP address of interface for inter-node connections
       lineinfile: "dest=/etc/scylla/scylla.yaml regexp='listen_address:' line='listen_address: {{ hostvars[inventory_hostname].ansible_all_ipv4_addresses[1] }}' state=present"
 
-    - name: Set Scylla Broadcast Address
-      lineinfile: "dest=/etc/scylla/scylla.yaml regexp='broadcast_address:' line='broadcast_address: {{ hostvars[inventory_hostname].ansible_all_ipv4_addresses[1] }}' state=present"
+    - name: Set Scylla IP address of interface for client connections
+      lineinfile: "dest=/etc/scylla/scylla.yaml regexp='rpc_address: localhost' line='rpc_address: {{ hostvars[inventory_hostname].ansible_all_ipv4_addresses[1] }}' state=present"
 
     - name: Flush the IP Tables
       shell: iptables -F
 
+    - name: Configure I/O Scheduler
+      shell: sudo scylla_io_setup   
+
     - name: Start the Scylla Services
-      shell: systemctl start scylla-server scylla-jmx
+      shell: sudo systemctl start scylla-server scylla-jmx
 
     - name: Wait for the Scylla-Server to be listening on the correct IP
-      wait_for: host=192.168.205.10 port=9042 delay=0
+      wait_for: host=192.168.205.10 port=9042 delay=1 connect_timeout=1 timeout=30
 
     - name: Make sure the KeySpace is defined
       shell: "cqlsh 192.168.205.10 -e \"CREATE KEYSPACE IF NOT EXISTS todospace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2};\""
