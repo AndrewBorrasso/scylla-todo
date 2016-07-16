@@ -11,15 +11,11 @@
 
     - name: download the Scylla repo
       get_url: 
-        url=http://downloads.scylladb.com/rpm/centos/scylla.repo 
+        url=http://downloads.scylladb.com/rpm/centos/scylla-1.2.repo 
         dest=/etc/yum.repos.d/scylla.repo
 
     - name: install Scylla packages
-      yum: name="{{ item }}" state=latest
-      with_items:
-          - scylla-server
-          - scylla-jmx
-          - scylla-tools
+      yum: name=scylla state=latest
 
     - name: Display all variables/facts known for a host
       debug: var=hostvars[inventory_hostname]
@@ -41,6 +37,9 @@
     - name: Flush the IP Tables
       shell: iptables -F
 
+    - name: Setup the Scylla instance tuned to the system
+      shell: scylla_setup
+
     - name: Start the Scylla Services
       shell: systemctl start scylla-server scylla-jmx
 
@@ -49,3 +48,4 @@
 
     - name: Make sure the KeySpace is defined
       shell: "cqlsh 192.168.205.10 -e \"CREATE KEYSPACE IF NOT EXISTS todospace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2};\""
+
